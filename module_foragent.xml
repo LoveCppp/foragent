@@ -1,0 +1,105 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project name="module_foragent" default="compile.module.foragent">
+  <dirname property="module.foragent.basedir" file="${ant.file.module_foragent}"/>
+  
+  <property name="module.jdk.home.foragent" value="${project.jdk.home}"/>
+  <property name="module.jdk.bin.foragent" value="${project.jdk.bin}"/>
+  <property name="module.jdk.classpath.foragent" value="${project.jdk.classpath}"/>
+  
+  <property name="compiler.args.foragent" value="-encoding UTF-8 -source 1.5 -target 1.5 ${compiler.args}"/>
+  
+  <property name="foragent.output.dir" value="${module.foragent.basedir}/target/classes"/>
+  <property name="foragent.testoutput.dir" value="${module.foragent.basedir}/target/test-classes"/>
+  
+  <path id="foragent.module.bootclasspath">
+    <!-- Paths to be included in compilation bootclasspath -->
+  </path>
+  
+  <path id="foragent.module.production.classpath">
+    <path refid="${module.jdk.classpath.foragent}"/>
+  </path>
+  
+  <path id="foragent.runtime.production.module.classpath">
+    <pathelement location="${foragent.output.dir}"/>
+  </path>
+  
+  <path id="foragent.module.classpath">
+    <path refid="${module.jdk.classpath.foragent}"/>
+    <pathelement location="${foragent.output.dir}"/>
+  </path>
+  
+  <path id="foragent.runtime.module.classpath">
+    <pathelement location="${foragent.testoutput.dir}"/>
+    <pathelement location="${foragent.output.dir}"/>
+  </path>
+  
+  
+  <patternset id="excluded.from.module.foragent">
+    <patternset refid="ignored.files"/>
+  </patternset>
+  
+  <patternset id="excluded.from.compilation.foragent">
+    <patternset refid="excluded.from.module.foragent"/>
+  </patternset>
+  
+  <path id="foragent.module.sourcepath">
+    <dirset dir="${module.foragent.basedir}">
+      <include name="src/main/java"/>
+      <include name="src/main/resources"/>
+    </dirset>
+  </path>
+  
+  <path id="foragent.module.test.sourcepath">
+    <dirset dir="${module.foragent.basedir}">
+      <include name="src/test/java"/>
+    </dirset>
+  </path>
+  
+  
+  <target name="compile.module.foragent" depends="compile.module.foragent.production,compile.module.foragent.tests" description="Compile module foragent"/>
+  
+  <target name="compile.module.foragent.production" depends="register.custom.compilers" description="Compile module foragent; production classes">
+    <mkdir dir="${foragent.output.dir}"/>
+    <javac2 destdir="${foragent.output.dir}" debug="${compiler.debug}" nowarn="${compiler.generate.no.warnings}" memorymaximumsize="${compiler.max.memory}" fork="true" executable="${module.jdk.bin.foragent}/javac">
+      <compilerarg line="${compiler.args.foragent}"/>
+      <bootclasspath refid="foragent.module.bootclasspath"/>
+      <classpath refid="foragent.module.production.classpath"/>
+      <src refid="foragent.module.sourcepath"/>
+      <patternset refid="excluded.from.compilation.foragent"/>
+    </javac2>
+    
+    <copy todir="${foragent.output.dir}">
+      <fileset dir="${module.foragent.basedir}/src/main/java">
+        <patternset refid="compiler.resources"/>
+        <type type="file"/>
+      </fileset>
+      <fileset dir="${module.foragent.basedir}/src/main/resources">
+        <patternset refid="compiler.resources"/>
+        <type type="file"/>
+      </fileset>
+    </copy>
+  </target>
+  
+  <target name="compile.module.foragent.tests" depends="register.custom.compilers,compile.module.foragent.production" description="compile module foragent; test classes" unless="skip.tests">
+    <mkdir dir="${foragent.testoutput.dir}"/>
+    <javac2 destdir="${foragent.testoutput.dir}" debug="${compiler.debug}" nowarn="${compiler.generate.no.warnings}" memorymaximumsize="${compiler.max.memory}" fork="true" executable="${module.jdk.bin.foragent}/javac">
+      <compilerarg line="${compiler.args.foragent}"/>
+      <bootclasspath refid="foragent.module.bootclasspath"/>
+      <classpath refid="foragent.module.classpath"/>
+      <src refid="foragent.module.test.sourcepath"/>
+      <patternset refid="excluded.from.compilation.foragent"/>
+    </javac2>
+    
+    <copy todir="${foragent.testoutput.dir}">
+      <fileset dir="${module.foragent.basedir}/src/test/java">
+        <patternset refid="compiler.resources"/>
+        <type type="file"/>
+      </fileset>
+    </copy>
+  </target>
+  
+  <target name="clean.module.foragent" description="cleanup module">
+    <delete dir="${foragent.output.dir}"/>
+    <delete dir="${foragent.testoutput.dir}"/>
+  </target>
+</project>

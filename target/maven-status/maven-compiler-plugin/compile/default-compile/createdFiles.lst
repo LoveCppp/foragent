@@ -1,0 +1,5 @@
+com/agent/AgentTransform.class
+com/agent/agent.class
+com/agent/TestClassVisitor$1.class
+com/agent/hook/ProcessBuilderHook.class
+com/agent/TestClassVisitor.class
